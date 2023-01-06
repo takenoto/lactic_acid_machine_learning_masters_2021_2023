@@ -31,16 +31,31 @@ class LoadedData:
         everything else will be ignored
         """
 
+        data_length = len(self.dict.get(features_names[0],[]))
+
         # Iterate over all Xs to get a list of list of X values
         X = [];
-        for __X_label in features_names:
-            X.append(self.dict[__X_label])
+        for i in range(data_length):
+            internal_x = []
+            for __X_label in features_names:
+                internal_x.append(self.dict[__X_label][i])
+            X.append(internal_x)
         # Iterate over all ys to get a list of list of y values
         y = [];
-        for __y_label in targets_names:
-            y.append(self.dict[__y_label])
+        for i in range(data_length):
+            internal_y = []
+            for __y_label in targets_names:
+                internal_y.append(self.dict[__y_label][i])
+            y.append(internal_y)
 
-        return features_names, targets_names, X, y;
+
+        return np.array(X), np.array(y);
+
+    def count_samples():
+        """
+        Number of samples (rows) in this dataset, excluding titles
+        """
+        self.samples_count=len(list(dict.values())[0]);
 
 
     def __init__(self, dict):
@@ -60,17 +75,15 @@ class LoadedData:
         """
         The samples themselves
         """
-        self.samples_count=len(list(dict.values())[0]);
-        """
-        Number of samples (rows) in this dataset, excluding titles
-        """
+        
 
 
 def load_lactic_acid_production_data():
     input_file = 'files/la_production_data.csv'
     df = pd.read_csv(input_file, header = 0, delimiter = ",")
     # Permite pegar cada propriedade, por coluna
-    dict = df.to_dict('list')
+    dict = df.to_dict(orient='list')
+
     return LoadedData(dict=dict);
 
 if __name__ == '__main__':
