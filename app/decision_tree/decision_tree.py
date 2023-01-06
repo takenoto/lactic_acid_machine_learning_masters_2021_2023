@@ -103,35 +103,27 @@ def adaboost_decision_tree_loop(X, y):
     )
 
     model = AdaBoostRegressor(random_state=0)
-
-    # Lógica: o último termo multiplica os 2 primeiros
-    X = [
-        [1, 2, 2],
-        [1, 2, 3],
-        [3,4, 1],
-        [3,4, 2],
-        [3,4, 3],
-        ]
-
-    y = [
-        2,# [2, 4],
-        3,#[3, 6],
-        1,#[3, 4],
-        2,#[6, 8],
-        3#[9, 12],
-        ]
-
-    print('try to fit')
-    model.fit(X, y)
-    print('fitted')
+    
 
     print('ADA BOOST + DECISION TREE')
-    for t in range(10, 20, 2):
-        test_size = t/100
-        data = split_data_for_test(X, y, test_size=test_size)
-        model.fit(data.train.X, data.train.y)
-        acc_total = r2_score(predictions, data.test.y)
-        print(f'acc total = {acc_total}')
+    # Como y é uma lista de lista e ele só pega 1, tem que resolver de outra forma
+    # daí separa 1 modelo pra cada feature
+    print(f'leny0 = {len(y[0])}')
+    for y_i in range(len(y[0])):
+        for t in range(10, 40, 10):
+            test_size = t/100
+            
+            data = split_data_for_test(X, y, test_size=test_size)
+            
+            model = AdaBoostRegressor(
+                    DecisionTreeRegressor(max_depth=4), n_estimators=300, random_state=rng
+                    )
+           
+            model.fit(data.train.X, data.train.y[:,y_i])
+            predictions = model.predict(data.test.X)
+            acc_total = r2_score(data.test.y[:,y_i], predictions)
+            print(f'y_i = {y_i}')
+            print(f'acc total = {acc_total}')
 
 
 

@@ -8,6 +8,7 @@ from domain.data_dict_simple_label_remover import simple_label_remover
 
 # Coisas para o loop local
 from app.decision_tree.decision_tree import classic_decision_tree_loop, adaboost_decision_tree_loop
+from app.k_neig.k_neg import basic_k_neig_loop
 
 # TODO faz regressão decision_tree facílima
 # só pra testar pegar esses dados em 3 pontos e plotar o gráfico,
@@ -25,7 +26,7 @@ from app.decision_tree.decision_tree import classic_decision_tree_loop, adaboost
 # TODO faz um arquivo chamado exemplo que ensina passo a passo
 # pra quando eu precisar consultar
 
-def main():
+def main(run_decision_trees=False, run_neigs=True):
     
     # Carrega dados
     raw_data = load_lactic_acid_production_data()
@@ -49,11 +50,15 @@ def main():
     print(f'X shape = {X.shape}')
     print(f'y shape = {y.shape}')
     
-    classic_decision_tree_loop(X, y)
+    if(run_decision_trees):
+        # DECISION TREES
+        classic_decision_tree_loop(X, y)
 
-    # FIXME apaga
-    # Parece que o ada é pra output único... 
-    adaboost_decision_tree_loop(X, y)
+        adaboost_decision_tree_loop(X, y)
+
+    if(run_neigs):
+        # K NEIG
+        basic_k_neig_loop(X, y)
     
     
 
@@ -69,4 +74,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main();
+    main(run_decision_trees=False, run_neigs=True);
