@@ -9,6 +9,7 @@ from domain.data_dict_simple_label_remover import simple_label_remover
 # Coisas para o loop local
 from app.decision_tree.decision_tree import classic_decision_tree_loop, adaboost_decision_tree_loop
 from app.k_neig.k_neg import basic_k_neig_loop
+from app.random_forest.random_forest import basic_random_forest_loop
 
 # TODO faz regressão decision_tree facílima
 # só pra testar pegar esses dados em 3 pontos e plotar o gráfico,
@@ -26,7 +27,7 @@ from app.k_neig.k_neg import basic_k_neig_loop
 # TODO faz um arquivo chamado exemplo que ensina passo a passo
 # pra quando eu precisar consultar
 
-def main(run_decision_trees=False, run_neigs=True):
+def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
     
     # Carrega dados
     raw_data = load_lactic_acid_production_data()
@@ -60,6 +61,8 @@ def main(run_decision_trees=False, run_neigs=True):
         # K NEIG
         basic_k_neig_loop(X, y)
     
+    if(run_random_forest):
+        basic_random_forest_loop(X, y)
     
 
     # TODO acho que todos os tipos de regrressão podem ficar num objeto
@@ -74,4 +77,4 @@ def main(run_decision_trees=False, run_neigs=True):
 
 
 if __name__ == '__main__':
-    main(run_decision_trees=False, run_neigs=True);
+    main(run_decision_trees=False, run_neigs=False, run_random_forest=True);
