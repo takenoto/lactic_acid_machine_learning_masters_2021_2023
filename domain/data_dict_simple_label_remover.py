@@ -1,4 +1,4 @@
-def simple_label_remover(dict):
+def simple_label_remover(dict, labels_to_remove:dict):
     """
     Remove todas as rows que contenham um valor definido na lista de valores da column (key)
     ex:
@@ -17,12 +17,6 @@ def simple_label_remover(dict):
 
     O dict original É MODIFICADO e RETORNADO (as 2 coisas).
     """
-    labels_to_remove = {
-        # Remove todos os itens onde a coluna reference contém o valor manual_adjustments
-        'reference':['manual_adjustments'],
-        # Remove todos os itens onde a coluna is_noise contém o valor 1 = True
-        'is_noise': [1]
-    }
     for key in labels_to_remove:
         # 1º descobre os indexes dos marcados como manual e tira eles
         # r² tava dando -5, vamo ver agora
