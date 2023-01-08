@@ -12,13 +12,14 @@ from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_
 # TODO os valores do loop tem que ser passados por DI, como configuração
 # daí por um acaso  tenho valores padrão. Melhor.
 
-def basic_random_forest_loop(X, y):
-    
+def basic_random_forest_loop(X, y, debug_print=False):
+    best_model = None
+    best_model_acc = None
     # A conclusão a princípio é que depende muito mais da qtde e qualidade dos dados do que qualquer outra coisa
-    for max_leaf_nodes in range(6, 8):
-        for min_samples_leaf in range(1, 3):
+    for max_leaf_nodes in range(8, 11):
+        for min_samples_leaf in range(1, 2):
             for i_test_size in range(1, 2):
-                for i in range(0, 7):
+                for i in range(8, 11):
                     # Parameters
                     test_size=0  + i_test_size/10
                     n_estimators = 50 + i*50
@@ -36,12 +37,22 @@ def basic_random_forest_loop(X, y):
                     # Testing
                     predictions = model.predict(data.test.X)
                     acc_total = r2_score(predictions, data.test.y)
+                    print(acc_total)
+                    if(best_model_acc is None or best_model_acc<acc_total):
+                        best_model_acc = acc_total
+                        best_model = model
                     
-                    # Debug & Printing
-                    print('----------')
-                    print(f'nº {i} | test_size={test_size} | n_estimators = {n_estimators} | min_samples_leaf = {min_samples_leaf} | max_leaf_nodes={max_leaf_nodes}')
-                    print(f'acc = {acc_total}')
+                    
                     # Cuidado que esse aqui é EM VALORES ABSOLUTOS!
                     mean_error = mean_squared_error(predictions, data.test.y)
-                    print(f'mean error² = {mean_error}')
+
+                    # Debug & Printing
+                    if(debug_print):
+                        print('----------')
+                        print(f'nº {i} | test_size={test_size} | n_estimators = {n_estimators} | min_samples_leaf = {min_samples_leaf} | max_leaf_nodes={max_leaf_nodes}')
+                        print(f'acc = {acc_total}')
+                        print(f'mean error² = {mean_error}')
+                    
                     pass
+
+    return best_model, best_model_acc
