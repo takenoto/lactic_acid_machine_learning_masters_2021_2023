@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from sklearn import neighbors
 
 def basic_k_neig_loop(X, y):
+
+    print('K NEIGH NOT IMPLEMENTED YET!!')
+    return;
+
     """
     ref: https://scikit-learn.org/stable/auto_examples/neighbors/plot_regression.html#sphx-glr-auto-examples-neighbors-plot-regression-py
     """
