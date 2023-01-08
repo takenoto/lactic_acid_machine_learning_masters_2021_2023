@@ -17,9 +17,9 @@ import matplotlib.pyplot as plt
 
 from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_data_for_test
 
-def classic_decision_tree_loop(X, y):
-    for t in range(10, 20, 2):
-        test_size = t/100
+def classic_decision_tree_loop(X, y, test_sizes=[0.1, 0.2]):
+    model = None;
+    for test_size in test_sizes:
         data = split_data_for_test(X, y, test_size=test_size)
         # Testa depth de 1 a 6
         for i in range(2, 5):
@@ -91,8 +91,10 @@ def classic_decision_tree_loop(X, y):
                 plt.legend()
                 plt.show()
 
+    return model;
 
-def adaboost_decision_tree_loop(X, y):
+
+def adaboost_decision_tree_loop(X, y, debug_print=False):
     """
     ref: https://scikit-learn.org/stable/auto_examples/ensemble/plot_adaboost_regression.html#id2
     """
@@ -122,8 +124,12 @@ def adaboost_decision_tree_loop(X, y):
             model.fit(data.train.X, data.train.y[:,y_i])
             predictions = model.predict(data.test.X)
             acc_total = r2_score(data.test.y[:,y_i], predictions)
-            print(f'y_i = {y_i}')
-            print(f'acc total = {acc_total}')
+            # Debug & PrintingQ 
+            if(debug_print):      
+                print(f'y_i = {y_i}')
+                print(f'acc total = {acc_total}')
+
+    return model
 
 
 
