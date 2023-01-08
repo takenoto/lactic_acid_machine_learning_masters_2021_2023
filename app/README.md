@@ -12,7 +12,20 @@
     * dimensionality reduction: unsupervised learning with continuous outputs
 
 
+# Falta estudar
+- Livro na pasta mestrado/tcc
+    - Feature importance
+- https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html#sphx-glr-auto-examples-model-selection-plot-nested-cross-validation-iris-py
+- https://scikit-learn.org/stable/modules/neighbors.html
+- https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_training_curves.html#sphx-glr-auto-examples-neural-networks-plot-mlp-training-curves-py
+- https://scikit-learn.org/stable/auto_examples/index.html
+- https://www.frontiersin.org/files/Articles/490924/fbioe-08-00007-HTML/image_m/fbioe-08-00007-g001.jpg
+- https://pubmed.ncbi.nlm.nih.gov/18634039/
+- https://www.google.com/search?q=Lactic+acid+production+from+lactose+by+Lactobacillus+plantarum%3A+kinetic+model+and+effects+of+pH%2C+substrate%2C+and+oxygen.&oq=Lactic+acid+production+from+lactose+by+Lactobacillus+plantarum%3A+kinetic+model+and+effects+of+pH%2C+substrate%2C+and+oxygen.&aqs=chrome..69i57.607j0j1&sourceid=chrome&ie=UTF-8
+
+
 ## Todos
+- Criar pasta só com excel com simulações POR ARTIGO. Aí depois copio esses dados e colo no banco padrão.
 - Preciso MUITO adicionar coisas de outros artigos (dados experimentais), dados de modelagem e fazer a comparação, ver se são o suficiente pra predição, etc.
 - Os dados manuais tb devo gerar uma lista, por exemplo, de forma que para qualquer valor de pH ou T, quando tudo for 0, tudo permanece "0" pra que ele aprenda que a massa tem que sair de algum canto.
 - LEr livro oreilly -> trees + NN
