@@ -9,12 +9,15 @@ from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_
 # explicação importante ~19:00 https://www.youtube.com/watch?v=RtA1rjhuavs
 # sobre max_features e as influências. Posso discutir isso também.
 
+# TODO os valores do loop tem que ser passados por DI, como configuração
+# daí por um acaso  tenho valores padrão. Melhor.
+
 def basic_random_forest_loop(X, y):
     
     # A conclusão a princípio é que depende muito mais da qtde e qualidade dos dados do que qualquer outra coisa
-    for max_leaf_nodes in range(6, 12):
+    for max_leaf_nodes in range(6, 8):
         for min_samples_leaf in range(1, 3):
-            for i_test_size in range(1, 4):
+            for i_test_size in range(1, 2):
                 for i in range(0, 7):
                     # Parameters
                     test_size=0  + i_test_size/10
