@@ -13,6 +13,9 @@
 
 
 # Falta estudar
+- https://scikit-learn.org/stable/modules/preprocessing.html
+- https://scikit-learn.org/stable/modules/neural_networks_supervised.html#complexity
+- https://www.relataly.com/stock-price-prediction-multi-output-regression-using-neural-networks-in-python/5800/
 - Livro na pasta mestrado/tcc
     - Feature importance
 - https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html#sphx-glr-auto-examples-model-selection-plot-nested-cross-validation-iris-py
