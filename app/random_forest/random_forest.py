@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import GridSearchCV, ShuffleSplit
 
 # Local
 from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_data_for_test
@@ -9,50 +10,26 @@ from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_
 # explicação importante ~19:00 https://www.youtube.com/watch?v=RtA1rjhuavs
 # sobre max_features e as influências. Posso discutir isso também.
 
-# TODO os valores do loop tem que ser passados por DI, como configuração
-# daí por um acaso  tenho valores padrão. Melhor.
+# TODO os valores do grid_params
 
 def basic_random_forest_loop(X, y, debug_print=False):
-    best_model = None
-    best_model_acc = None
-    # A conclusão a princípio é que depende muito mais da qtde e qualidade dos dados do que qualquer outra coisa
-    for max_leaf_nodes in range(8, 11):
-        for min_samples_leaf in range(1, 2):
-            for i_test_size in range(1, 2):
-                for i in range(8, 11):
-                    # Parameters
-                    test_size=0  + i_test_size/10
-                    n_estimators = 50 + i*50
-                    
-                    # Model creation
-                    model = RandomForestRegressor(random_state=0,
-                                                    n_estimators=n_estimators,
-                                                    min_samples_leaf=min_samples_leaf,
-                                                    max_leaf_nodes=max_leaf_nodes)
-                    
-                    # Fitting
-                    data = split_data_for_test(X, y, test_size=test_size)
-                    model.fit(data.train.X, data.train.y)
-                    
-                    # Testing
-                    predictions = model.predict(data.test.X)
-                    acc_total = r2_score(predictions, data.test.y)
-                    print(acc_total)
-                    if(best_model_acc is None or best_model_acc<acc_total):
-                        best_model_acc = acc_total
-                        best_model = model
-                    
-                    
-                    # Cuidado que esse aqui é EM VALORES ABSOLUTOS!
-                    mean_error = mean_squared_error(predictions, data.test.y)
 
-                    # Debug & Printing
-                    if(debug_print):
-                        print('----------')
-                        print(f'nº {i} | test_size={test_size} | n_estimators = {n_estimators} | min_samples_leaf = {min_samples_leaf} | max_leaf_nodes={max_leaf_nodes}')
-                        print(f'acc = {acc_total}')
-                        print(f'mean error² = {mean_error}')
-                    
-                    pass
+    print('\n---------------------------\n')
+    print('grid search: RANDOM TREE')
+    param_grid = {
+        'criterion':['absolute_error'],
+        'random_state': [50],
+        #'max_leaf_nodes':[3, 12],#5,6],
+        #'min_samples_leaf':[4,20],#1, 2],
+        #'min_samples_split': [4,20],
+        'n_estimators':[50, 150],#400]
+    }
 
-    return best_model, best_model_acc
+    forest = RandomForestRegressor()
+    cv = ShuffleSplit(n_splits=20, test_size=0.3, random_state=42)
+    grid = GridSearchCV(forest, param_grid, error_score='raise', cv=cv)
+    grid.fit(X, y)
+    print('\n---------------------------\n\n')
+    print(grid.best_params_)
+    print(grid.best_score_)
+    return grid
