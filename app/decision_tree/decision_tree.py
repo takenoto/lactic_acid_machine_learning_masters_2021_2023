@@ -1,9 +1,10 @@
 import numpy as np
+import pandas as pd
 
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
-# Metrics
+from sklearn.model_selection import GridSearchCV, ShuffleSplit
 # from sklearn.metrics import accuracy_score # esse é para coisas do tipo classificação
 from sklearn.metrics import r2_score
 
@@ -18,80 +19,40 @@ import matplotlib.pyplot as plt
 from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_data_for_test
 
 def classic_decision_tree_loop(X, y, test_sizes=[0.1, 0.2]):
-    model = None;
-    for test_size in test_sizes:
-        data = split_data_for_test(X, y, test_size=test_size)
-        # Testa depth de 1 a 6
-        for i in range(2, 5):
-            max_depth = i;
-            model = do_decision_tree(data.train.X, data.train.y, max_depth=max_depth)
+    model = None
 
-            #-----------------------
-            predictions = model.predict(data.test.X)
+    param_grid = {
+        'random_state': [50],
+        #'criterion':['squared_error', 'absolute_error'],
+        'criterion':['absolute_error'],
+        'max_depth':[2, 10, 20],#,50],
+        # Com mais leafs fica uma escadinha mas faz mais sentido pra n dar overfit
+        'min_samples_leaf': [4, 12] #[1, 2, 10]
+    }
 
-            # acc_x = r2_score(predictions[0], data.test.y[0])
-            # print(f'acc x = {acc_x}')
-            # acc_lla = r2_score(predictions[1], data.test.y[1])
-            # print(f'acc lla = {acc_lla}')
-            # acc_s = r2_score(predictions[2], data.test.y[2])
-            # print(f'acc_s = {acc_s}')
+    tree = DecisionTreeRegressor()
+    cv = ShuffleSplit(n_splits=20, test_size=0.8, random_state=42)
+    
+    grid = GridSearchCV(tree,
+                        param_grid, error_score='raise',
+                        # TODO o que é esse scoring?
+                        #scoring='f1',
+                        cv=cv, # nenhum dos dois cvs consegui fazer prestar
+                        # verbose=3
+                        )
+    
+    for test_size in [0.1]:
+        grid.fit(X, y)
 
-            acc_total = r2_score(predictions, data.test.y)
-            print(f'test_size = {test_size}')
-            print(f'max_depth = {max_depth}')
-            print(f'acc total = {acc_total}')
+    # pd.DataFrame(grid.cv_results_)
+    print('\n---------------------------\n')
+    print('grid: decision tree')
+    # TODO bom mesmo seria printar todos os erros disponíveis e pegar um razoável, pra n dar overfit
+    print(grid.best_params_)
+    print(grid.best_score_)
+    print('\n---------------------------\n\n')
 
-            # acc = check_model_accurracy();
-            # TODO calcular acerto %
-            # TODO na verdade acho que cada modelo tem que ser um objeto
-            # e ter os indicadores de acertos internamente??? Se variar né...
-
-            #-------------------------
-            # pega predição do modelo
-            # Esses são os dados do experimento 3
-            if(False):
-
-                fig3datafor_plot = np.array([
-                    [1.15, 3.5, 36],
-                    [1.5, 5, 34],
-                    [2, 5.8, 34],
-                    [2.4, 6, 31],
-                    [2.95 , 7, 25.3],
-                    [3.6, 9, 21],
-                    [4.5, 13, 20],
-                    [5.7, 16.8, 17.3],
-                    [6.3, 23, 12.5],
-                    [6.85, 24, 6.8],
-                    [6.9, 28, 1],
-                    [6.93, 30, 0.1]
-                    ])
-
-                row_for_fig_3 = np.array([
-                        [0, 1.15, 36, 3.5],
-                        [1, 1.15, 36, 3.5],
-                        [2, 1.15, 36, 3.5],
-                        [3, 1.15, 36, 3.5],
-                        [4, 1.15, 36, 3.5],
-                        [5, 1.15, 36, 3.5],
-                        [6, 1.15, 36, 3.5],
-                        [7, 1.15, 36, 3.5],
-                        [8, 1.15, 36, 3.5],
-                        [9, 1.15, 36, 3.5],
-                        [10, 1.15, 36, 3.5],
-                        [11, 1.15, 36, 3.5],
-                        ])
-                yhat = model.predict(row_for_fig_3)
-                plt.plot(row_for_fig_3[:, 0], fig3datafor_plot[:,0], label='X_real')
-                plt.plot(row_for_fig_3[:, 0], fig3datafor_plot[:,1], label='P_real')
-                plt.plot(row_for_fig_3[:, 0], fig3datafor_plot[:,2], label='S_real')
-                plt.plot(row_for_fig_3[:, 0], yhat[:, 0], label='X')
-                plt.plot(row_for_fig_3[:, 0], yhat[:, 1], label='P')
-                plt.plot(row_for_fig_3[:, 0], yhat[:, 2], label='S')
-                # plt.plot(yhat[:, 0], yhat[:, 1], label='first')
-                plt.legend()
-                plt.show()
-
-    return model;
+    return grid
 
 
 def adaboost_decision_tree_loop(X, y, debug_print=False):
@@ -128,22 +89,5 @@ def adaboost_decision_tree_loop(X, y, debug_print=False):
             if(debug_print):      
                 print(f'y_i = {y_i}')
                 print(f'acc total = {acc_total}')
-
-    return model
-
-
-
-    
-
-
-def do_decision_tree(X, y, max_depth=3):
-    model = DecisionTreeRegressor(max_depth=max_depth)
-    # model = Pipeline(
-    #     [
-    #         ('scale', StandardScaler()),
-    #         ('model', DecisionTreeRegressor(max_depth=max_depth))
-    #     ]
-    # )
-    model.fit(X, y)
 
     return model
