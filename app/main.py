@@ -42,9 +42,10 @@ def plotvalues(X, y, prediction, time_index=0, X_index=0, P_index=1, S_index=2, 
     plt.legend()
     plt.show();
     
+# TODO faz a iteração nesses moldes: https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_training_curves.html#sphx-glr-auto-examples-neural-networks-plot-mlp-training-curves-py
+# Daí só seto os params e o resto vem de brinde
 
-
-def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run_nn=False):
+def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False, run_random_forest=False, run_nn=False):
    
     print('will load data')
 
@@ -65,9 +66,10 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run
 
     print(f'initial X shape = {X.shape}')
     print(f'initial y shape = {y.shape}')
-    # TODO descobre index dos nans e printa
     print(f'X contains nan = {np.any(np.isnan(X))}')
+    print(np.argwhere(np.isnan(X)))
     print(f'y contains nan = {np.any(np.isnan(y))}')
+    print(np.argwhere(np.isnan(y)))
    
     # Removendo as labels solicitadas
     raw_data.dict = simple_label_remover(
@@ -97,8 +99,6 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run
             'y_whey_lactose',
     ]
     )
-
-    # FIXME os valores do real, quando plota, tem mto 0. Tem um erro em algum ponto da minha lógica
 
     # TODO será que eu realmente devia ter usado todos os valores da simulação?
     # daí ao invés de 800 pontos teria uns 5-6k (pulei de 4 em 4 ou 8 em 8 dependendo do caso!)
@@ -144,6 +144,10 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run
         print('starting kneigs')
         # K NEIG
         basic_k_neig_loop(X, y)
+
+    if(run_gradient_boosting):
+        raise ValueError(':::  GRADIENT BOOSTING ::: NOT IMPLEMENTED  :::');
+        # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html
     
     if(run_random_forest):
         # FIXME a random tá demorando MUITO pra otimizar com o gridsearch
@@ -165,6 +169,9 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+        
+        # TODO faz um modelo com os valores padrão mantidos e variando o tempo
+        # Assim consigo ver se ele entende que tem um ponto de máximo e dali não passa
 
         model = pytorch_nn_loop(X, y, debug_print=False)
         
@@ -183,4 +190,4 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run
 
 
 if __name__ == '__main__':
-    main(run_decision_trees=False, run_neigs=False, run_random_forest=True, run_nn=True);
+    main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=True, run_random_forest=False, run_nn=True);
