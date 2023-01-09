@@ -11,6 +11,7 @@ from domain.data_dict_simple_label_remover import simple_label_remover
 from app.decision_tree.decision_tree import classic_decision_tree_loop, adaboost_decision_tree_loop
 from app.k_neig.k_neg import basic_k_neig_loop
 from app.random_forest.random_forest import basic_random_forest_loop
+from app.neural_network.nn import scikit_nn_loop, pytorch_nn_loop
 
 # TODO faz regressão decision_tree facílima
 # só pra testar pegar esses dados em 3 pontos e plotar o gráfico,
@@ -43,7 +44,7 @@ def plotvalues(X, y, prediction, time_index=0, X_index=0, P_index=1, S_index=2, 
     
 
 
-def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
+def main(run_decision_trees=False, run_neigs=False, run_random_forest=False, run_nn=False):
    
     print('will load data')
 
@@ -64,6 +65,9 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
 
     print(f'initial X shape = {X.shape}')
     print(f'initial y shape = {y.shape}')
+    # TODO descobre index dos nans e printa
+    print(f'X contains nan = {np.any(np.isnan(X))}')
+    print(f'y contains nan = {np.any(np.isnan(y))}')
    
     # Removendo as labels solicitadas
     raw_data.dict = simple_label_remover(
@@ -104,14 +108,14 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
     # overfitted
     # X = X[0:999,:]
     # y = y[0:999,:]
-    X = X[200:300]
-    y = y[200:300]
+    X = X[000:1200]
+    y = y[000:1200]
 
     # TODO usa o label filter pra pegar só o X e y de um único ref/subref (altiok 2006 fig2) e
     # plot só ele usando "s" e "e"
     # prevê o básico e plota, dados 250-350
-    s = 10; # range start
-    e = 40; # range end
+    s = 100; # range start
+    e = 650; # range end
     
     # TODO erro nan????? Eu cropei pra resolver, mas o certo é descobrir onde tá
     # TODO printar time, X,P,S entrada. Tem algo errado. Não tá fazendo sentido esses
@@ -127,10 +131,12 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
         model = classic_decision_tree_loop(X, y, test_sizes=[0.1])
 
         prediction = model.predict(X[s:e])
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction)
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
 
         # Ada boost é unidim, nem plote agora n adianta
-        model = adaboost_decision_tree_loop(X, y)
+        # model = adaboost_decision_tree_loop(X, y)
 
 
     if(run_neigs):
@@ -140,15 +146,28 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
         basic_k_neig_loop(X, y)
     
     if(run_random_forest):
+        # FIXME a random tá demorando MUITO pra otimizar com o gridsearch
         print('\n------------------------\n')
         print('starting random forest')
-        model, acc = basic_random_forest_loop(X, y)
+        model = basic_random_forest_loop(X, y)
 
-        print(f'best acc = {acc}')
+        # print(f'best acc = {acc}')
         prediction = model.predict(X[s:e])
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
         plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+
+    if(run_nn):
+        # TODO roda só com uma fração dos dados pq são muitos, vai passar a vida
+        # SCIKIT
+        model = scikit_nn_loop(X, y, debug_print=False)
+        prediction = model.predict(X[s:e])
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
+        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+
+        model = pytorch_nn_loop(X, y, debug_print=False)
+        
         
     
 
@@ -164,4 +183,4 @@ def main(run_decision_trees=False, run_neigs=False, run_random_forest=True):
 
 
 if __name__ == '__main__':
-    main(run_decision_trees=True, run_neigs=False, run_random_forest=True);
+    main(run_decision_trees=False, run_neigs=False, run_random_forest=True, run_nn=True);
