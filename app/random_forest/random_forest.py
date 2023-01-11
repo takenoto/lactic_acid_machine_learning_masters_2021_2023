@@ -15,14 +15,14 @@ from domain.data_dealing.data_split_test_train import DataSplitTestTrain, split_
 def basic_random_forest_loop(X, y, debug_print=False):
 
     print('\n---------------------------\n')
-    print('grid search: RANDOM TREE')
+    print('grid search: RANDOM FOREST')
     param_grid = {
         'criterion':['absolute_error'],
         'random_state': [50],
-        #'max_leaf_nodes':[3, 12],#5,6],
-        #'min_samples_leaf':[4,20],#1, 2],
+        # 'max_leaf_nodes':[3, 12],#5,6],
+        'min_samples_leaf':[4,20],#1, 2],
         #'min_samples_split': [4,20],
-        'n_estimators':[50, 150],#400]
+        'n_estimators':[24],#150],#400]
     }
 
     forest = RandomForestRegressor()
