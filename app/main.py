@@ -29,21 +29,37 @@ from app.neural_network.nn import scikit_nn_loop, pytorch_nn_loop
 # TODO faz um arquivo chamado exemplo que ensina passo a passo
 # pra quando eu precisar consultar
 
-def plotvalues(X, y, prediction, time_index=0, X_index=0, P_index=1, S_index=2, show_X=False, show_P=False, show_S=False):
+def plotvalues(X, prediction, y=None, time_index=0, X_index=0, P_index=1, S_index=2, show_X=False, show_P=False, show_S=False, title=None):
     if(show_X):
-        plt.plot(X[:, time_index], y[:,X_index], label='X_real')
+        if(y is not None):
+            plt.plot(X[:, time_index], y[:,X_index], label='X_real')
         plt.plot(X[:, time_index], prediction[:, X_index], label='X')
     if(show_S):
-        plt.plot(X[:, time_index], y[:,S_index], label='S_real')
+        if(y is not None):
+            plt.plot(X[:, time_index], y[:,S_index], label='S_real')
         plt.plot(X[:, time_index], prediction[:, S_index], label='S')
     if(show_P):
-        plt.plot(X[:, time_index], y[:,P_index], label='P_real')
+        if(y is not None):
+            plt.plot(X[:, time_index], y[:,P_index], label='P_real')
         plt.plot(X[:, time_index], prediction[:, P_index], label='P')
+    if(title is not None):
+        plt.title(title)
     plt.legend()
     plt.show();
     
 # TODO faz a iteração nesses moldes: https://scikit-learn.org/stable/auto_examples/neural_networks/plot_mlp_training_curves.html#sphx-glr-auto-examples-neural-networks-plot-mlp-training-curves-py
 # Daí só seto os params e o resto vem de brinde
+
+def fast_model_test(model, title):
+    X_test_local = np.array([[i/10, 0.9, 5.86, 48.10] for i in range(0, 102)])
+    prediction = model.predict(X_test_local)
+    plotvalues(title=title, X=X_test_local, prediction=prediction, show_X=True, show_P=True, show_S=True)
+
+    # Teste 2
+    X_test_local = np.array([[i/10, 0.1, 0.5, 56] for i in range(0, 102)])
+    prediction = model.predict(X_test_local)
+    plotvalues(X=X_test_local, prediction=prediction, show_X=True, show_P=True, show_S=True)
+
 
 def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False, run_random_forest=False, run_nn=False):
    
@@ -99,30 +115,10 @@ def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False,
             'y_whey_lactose',
     ]
     )
-
-    # TODO será que eu realmente devia ter usado todos os valores da simulação?
-    # daí ao invés de 800 pontos teria uns 5-6k (pulei de 4 em 4 ou 8 em 8 dependendo do caso!)
-    # isso pode melhorar bastante os resultados...
-
-    # Para ranges de dados MUITO grandes assim, o erro aumenta mto. Para ranges baixo fica
-    # overfitted
-    # X = X[0:999,:]
-    # y = y[0:999,:]
-    X = X[000:1200]
-    y = y[000:1200]
-
-    # TODO usa o label filter pra pegar só o X e y de um único ref/subref (altiok 2006 fig2) e
-    # plot só ele usando "s" e "e"
-    # prevê o básico e plota, dados 250-350
-    s = 100; # range start
-    e = 650; # range end
-    
-    # TODO erro nan????? Eu cropei pra resolver, mas o certo é descobrir onde tá
-    # TODO printar time, X,P,S entrada. Tem algo errado. Não tá fazendo sentido esses
-    # valores de entrada...
     
     print(f'X shape = {X.shape}')
     print(f'y shape = {y.shape}')
+
     
     if(run_decision_trees):
         print('\n------------------------\n')
@@ -130,10 +126,7 @@ def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False,
         # DECISION TREES
         model = classic_decision_tree_loop(X, y, test_sizes=[0.1])
 
-        prediction = model.predict(X[s:e])
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+        fast_model_test(model=model, title='Decision Trees')
 
         # Ada boost é unidim, nem plote agora n adianta
         # model = adaboost_decision_tree_loop(X, y)
@@ -150,29 +143,24 @@ def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False,
         # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html
     
     if(run_random_forest):
-        # FIXME a random tá demorando MUITO pra otimizar com o gridsearch
         print('\n------------------------\n')
         print('starting random forest')
         model = basic_random_forest_loop(X, y)
 
-        # print(f'best acc = {acc}')
-        prediction = model.predict(X[s:e])
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+        fast_model_test(model=model, title='Random Forest')
+
 
     if(run_nn):
-        # TODO roda só com uma fração dos dados pq são muitos, vai passar a vida
+        print('\n------------------------\n')
+        print('starting neural networks')
         # SCIKIT
         model = scikit_nn_loop(X, y, debug_print=False)
-        prediction = model.predict(X[s:e])
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_X=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_P=True)
-        plotvalues(X=X[s:e], y=y[s:e], prediction=prediction, show_S=True)
+
+        fast_model_test(model=model, title='Neural Networks')
+
         
         # TODO faz um modelo com os valores padrão mantidos e variando o tempo
         # Assim consigo ver se ele entende que tem um ponto de máximo e dali não passa
-
         model = pytorch_nn_loop(X, y, debug_print=False)
         
         
@@ -190,4 +178,4 @@ def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False,
 
 
 if __name__ == '__main__':
-    main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=True, run_random_forest=False, run_nn=True);
+    main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False, run_random_forest=False, run_nn=True);
