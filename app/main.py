@@ -177,5 +177,11 @@ def main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False,
     pass
 
 
+
 if __name__ == '__main__':
+    # TODO implemente como um dict ao invés de vários params
+    #{
+    # 'run_dec_tree':true,
+    # 'run_nn':{'scikit':True, 'pytorch':True}, etc
+    # }
     main(run_decision_trees=False, run_neigs=False, run_gradient_boosting=False, run_random_forest=False, run_nn=True);
